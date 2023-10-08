@@ -1,0 +1,62 @@
+{
+    "name": "InputAction",
+    "maps": [
+        {
+            "name": "Touch",
+            "id": "a76ccbcc-47c7-4596-a226-d24a743bdb18",
+            "actions": [
+                {
+                    "name": "Touch",
+                    "type": "Value",
+                    "id": "55750abb-35e9-4676-b8d4-300f59c5ec9f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "88668281-6068-4cc0-a2d5-4dceb6cf1df1",
+                    "path": "<Touchscreen>/primaryTouch/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Touch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Shake",
+            "id": "05d8abdd-629f-4fe5-999a-f452f2ae6894",
+            "actions": [
+                {
+                    "name": "Accelerometer",
+                    "type": "Value",
+                    "id": "63755d3a-ac7b-4b77-92f2-91b9bacdc27a",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d845653e-436b-4932-b0c2-8f4e151ea8ae",
+                    "path": "<Accelerometer>/acceleration",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Accelerometer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
