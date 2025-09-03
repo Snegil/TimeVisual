@@ -13,6 +13,6 @@ public class SetText : MonoBehaviour
     }
     public void SetTextWithButton()
     {
-        this.text.text = Application.systemLanguage.ToString();
+        text.text = Application.systemLanguage.ToString();
     }
 }

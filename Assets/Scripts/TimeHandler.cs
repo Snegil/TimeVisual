@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TimeHandler : MonoBehaviour
@@ -10,7 +7,7 @@ public class TimeHandler : MonoBehaviour
     public event TimeChangedEvent TimeChanged;
     public event TimeHitZeroEvent TimeHitZero;
 
-    //public Action<float> TimeChanged; exempel på "prefab" för delegates
+    //public Action<float> TimeChanged; exempel pï¿½ "prefab" fï¿½r delegates
     [SerializeField]
     float timeRemaining;
 
@@ -44,7 +41,8 @@ public class TimeHandler : MonoBehaviour
     }
     public void SetTime(int time)
     {
-        Handheld.Vibrate();
+        //TODO: FIX VIBRATION ON PHONES
+        //Handheld.Vibrate();
         timeRemaining = time;
         tick = true;
     }

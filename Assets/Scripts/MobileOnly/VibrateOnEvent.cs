@@ -16,8 +16,9 @@ public class VibrateOnEvent : MonoBehaviour
         timeHandler.TimeHitZero += VibrateWhenEvent;
     }
 
-    public void VibrateWhenEvent() 
+    public void VibrateWhenEvent()
     {
-        Handheld.Vibrate();
+        //TODO: FIX VIBRATION ON PHONES
+        //Handheld.Vibrate();
     }
 }

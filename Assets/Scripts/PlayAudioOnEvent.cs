@@ -6,10 +6,11 @@ public class PlayAudioOnEvent : MonoBehaviour
 {
     [SerializeField]
     AudioSource audioSrc;
-    
+
     public void PlayAudio()
     {
         audioSrc.Play();
-        Handheld.Vibrate();
+        //TODO: FIX VIBRATION ON PHONES
+        //Handheld.Vibrate();
     }
 }

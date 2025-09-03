@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LanguageManager : MonoBehaviour
@@ -24,7 +22,7 @@ public class LanguageManager : MonoBehaviour
     }
     public void ChangeLanguage(int languageindex)
     {
-        this.languageIndex = languageindex;
+        languageIndex = languageindex;
         PlayerPrefs.SetInt("LanguageIndex", languageindex);
         ChangedLanguage?.Invoke(languageindex);
     }

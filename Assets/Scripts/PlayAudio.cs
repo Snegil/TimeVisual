@@ -26,7 +26,8 @@ public class PlayAudio : MonoBehaviour
             if (timer <= 0)
             {
                 audioSrc.Play();
-                Handheld.Vibrate();
+                //TODO: FIX VIBRATION ON PHONES
+                //Handheld.Vibrate();
                 timer = setTimer;
             }
         }
