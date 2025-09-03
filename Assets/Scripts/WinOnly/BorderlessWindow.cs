@@ -28,6 +28,26 @@ public class BorderlessWindow : MonoBehaviour
     static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter,
         int X, int Y, int cx, int cy, uint uFlags);
 
+    IntPtr GetUnityWindowHandle()
+    {
+        using (Process process = Process.GetCurrentProcess())
+        {
+            return process.MainWindowHandle;
+        }
+    }
+
+    [DllImport("user32.dll")]
+    static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RECT
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
     AlwaysOnTop alwaysOnTopComponent;
 
     [SerializeField]
@@ -55,19 +75,42 @@ public class BorderlessWindow : MonoBehaviour
 
         SetWindowPos(hWnd, IntPtr.Zero, 0, 0, 0, 0, FLAGS);
 
-        SetWindowPos(hWnd, IntPtr.Zero, 0, Screen.currentResolution.height / 2, width, height, SWP_FRAMECHANGED);
+        if (PlayerPrefs.HasKey("WindowPosX") && PlayerPrefs.HasKey("WindowPosY"))
+        {
+            int posX = PlayerPrefs.GetInt("WindowPosX");
+            int posY = PlayerPrefs.GetInt("WindowPosY");
+            SetWindowPos(hWnd, IntPtr.Zero, posX, posY, width, height, SWP_FRAMECHANGED);
+        }
+        else
+        {
+            SetWindowPos(hWnd, IntPtr.Zero, 0, Screen.currentResolution.height / 2, width, height, SWP_FRAMECHANGED);
+        }
 
         alwaysOnTopComponent.SetAlwaysOnTop();
         alwaysOnTopComponent.ToggleAlwaysOnTop();
     }
-// TEST SCREENSIZE; WORKED BUT NOT A GREAT WAY TO OPTIMISE THINGS.
-//Screen.currentResolution.width / 6, Screen.currentResolution.height / 5
+    // TEST SCREENSIZE; WORKED BUT NOT A GREAT WAY TO OPTIMISE THINGS.
+    //Screen.currentResolution.width / 6, Screen.currentResolution.height / 5
 
-    IntPtr GetUnityWindowHandle()
+
+
+    public void SaveWindowPos()
     {
-        using (Process process = Process.GetCurrentProcess())
+        if (SystemInfo.deviceType == DeviceType.Handheld) { return; }
+
+        IntPtr hWnd = GetUnityWindowHandle();
+        if (hWnd == IntPtr.Zero)
         {
-            return process.MainWindowHandle;
+            UnityEngine.Debug.LogError("Could not get Unity window handle.");
+            return;
+        }
+
+        // Get window rect
+        if (GetWindowRect(hWnd, out RECT rect))
+        {
+            PlayerPrefs.SetInt("WindowPosX", rect.Left);
+            PlayerPrefs.SetInt("WindowPosY", rect.Top);
+            PlayerPrefs.Save();
         }
     }
 }
