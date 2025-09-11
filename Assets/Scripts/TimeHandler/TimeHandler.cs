@@ -7,7 +7,6 @@ public class TimeHandler : MonoBehaviour
     public event TimeChangedEvent TimeChanged;
     public event TimeHitZeroEvent TimeHitZero;
 
-    //public Action<float> TimeChanged; exempel p� "prefab" f�r delegates
     [SerializeField]
     float timeRemaining;
 

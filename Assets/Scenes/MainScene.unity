@@ -1961,7 +1961,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &518756233
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4013,6 +4013,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1655693778}
+        m_TargetAssemblyTypeName: TimeDisplay, Assembly-CSharp
+        m_MethodName: Flash
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!222 &872080744
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4899,7 +4911,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1080082690
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4926,7 +4938,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1080082689}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 17582722e7f0c5f47ad2e47638767545, type: 3}
   m_Name: 
@@ -6676,10 +6688,10 @@ RectTransform:
   - {fileID: 1877566263}
   - {fileID: 1655693775}
   - {fileID: 1448772702}
-  - {fileID: 1080082690}
   - {fileID: 163366639}
   - {fileID: 1464280210}
   - {fileID: 2124052967}
+  - {fileID: 1080082690}
   - {fileID: 518756233}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.48}
@@ -7007,6 +7019,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeHandler: {fileID: 480943462}
+  duration: 2
+  amount: 5
 --- !u!1 &1674775127
 GameObject:
   m_ObjectHideFlags: 0
