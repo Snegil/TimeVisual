@@ -12,13 +12,6 @@ public class TimeDisplay : MonoBehaviour
 
     Image image;
 
-    [SerializeField]
-    float timeBetweenFlashes = 0.2f;
-    [SerializeField]
-    float timeBetweenSetsOfFlashes = 1.5f;
-    [SerializeField]
-    int amountOfFlashes = 5;
-
     void Start()
     {
         image = GetComponent<Image>();
@@ -40,23 +33,5 @@ public class TimeDisplay : MonoBehaviour
     void DisplayTime(float time)
     {
         image.fillAmount = time / maxTime;
-    }
-    public void Flash()
-    {
-        StartCoroutine(FlashRoutine());
-    }
-    IEnumerator FlashRoutine()
-    {
-        for (int i = 0; i < amountOfFlashes; i++)
-        {
-            image.fillAmount = 1;
-            yield return new WaitForSeconds(0.2f);
-            image.fillAmount = 0;
-            yield return new WaitForSeconds(0.2f);
-            image.fillAmount = 1;
-            yield return new WaitForSeconds(0.2f);
-            image.fillAmount = 0;
-            yield return new WaitForSeconds(2f);
-        }
     }
 }
