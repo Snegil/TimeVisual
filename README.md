@@ -1,3 +1,2 @@
-# Time-Timer
- My version of a Time-Timer; visualise time on your android device!
- Currently supports three languages: Swedish, English, Dutch!
+# [Unnamed as of yet.]
+A visual timer that shows the passage of time with a decreasing bar.
