@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
@@ -16,7 +18,9 @@ public class BorderlessWindow : MonoBehaviour
     const uint SWP_NOMOVE = 0x0002;
     const uint SWP_NOSIZE = 0x0001;
     const uint SWP_FRAMECHANGED = 0x0020;
-    const uint FLAGS = SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED;
+    const uint SWP_NOZORDER = 0x0004;
+    const uint SWP_NOACTIVATE = 0x0010;
+    const uint FLAGS = SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE;
 
     [DllImport("user32.dll")]
     static extern uint GetWindowLong(IntPtr hWnd, int nIndex);
@@ -51,10 +55,23 @@ public class BorderlessWindow : MonoBehaviour
     AlwaysOnTop alwaysOnTopComponent;
 
     [SerializeField]
-    int width;
+    int sizeIncrement = 5;
 
-    [SerializeField]
-    int height;
+    readonly List<Vector2Int> resolutions = new()
+    {
+        // 16:9 Aspect Ratio Resolutions
+        new Vector2Int(340, 180), // 0 ;
+        new Vector2Int(374, 198), // 1 ;
+        new Vector2Int(408, 216), // 2 ;
+        new Vector2Int(442, 234), // 3 ;
+        new Vector2Int(476, 252), // 4 ;
+        new Vector2Int(510, 270), // 5 ;
+        new Vector2Int(544, 288), // 6 ;
+        new Vector2Int(578, 306), // 7 ;
+        new Vector2Int(612, 324), // 8 ;
+        new Vector2Int(646, 342), // 9 ;
+        new Vector2Int(680, 360)  // 10;
+    };
 
     void Start()
     {
@@ -75,24 +92,52 @@ public class BorderlessWindow : MonoBehaviour
 
         SetWindowPos(hWnd, IntPtr.Zero, 0, 0, 0, 0, FLAGS);
 
-        if (PlayerPrefs.HasKey("WindowPosX") && PlayerPrefs.HasKey("WindowPosY"))
+        if (PlayerPrefs.HasKey("WindowPosX") && PlayerPrefs.HasKey("WindowPosY") && PlayerPrefs.HasKey("WindowSizeIncrement"))
         {
             int posX = PlayerPrefs.GetInt("WindowPosX");
             int posY = PlayerPrefs.GetInt("WindowPosY");
-            SetWindowPos(hWnd, IntPtr.Zero, posX, posY, width, height, SWP_FRAMECHANGED);
+            sizeIncrement = PlayerPrefs.GetInt("WindowSizeIncrement");
+            SetWindowPos(hWnd, IntPtr.Zero, posX, posY, resolutions[sizeIncrement].x, resolutions[sizeIncrement].y, SWP_FRAMECHANGED);
         }
         else
         {
-            SetWindowPos(hWnd, IntPtr.Zero, 0, Screen.currentResolution.height / 2, width, height, SWP_FRAMECHANGED);
+            SetWindowPos(hWnd, IntPtr.Zero, 0, Screen.currentResolution.height / 2, resolutions[sizeIncrement].x, resolutions[sizeIncrement].y, SWP_FRAMECHANGED);
         }
 
         alwaysOnTopComponent.SetAlwaysOnTop();
-        alwaysOnTopComponent.ToggleAlwaysOnTop();
+        alwaysOnTopComponent.AlwaysOnTopFunction();
     }
     // TEST SCREENSIZE; WORKED BUT NOT A GREAT WAY TO OPTIMISE THINGS.
     //Screen.currentResolution.width / 6, Screen.currentResolution.height / 5
 
+    public void WindowSizeIncrement(int addedIncrement)
+    {
+        if (SystemInfo.deviceType == DeviceType.Handheld) { return; }
 
+        sizeIncrement += addedIncrement;
+        sizeIncrement = Mathf.Clamp(sizeIncrement, 0, resolutions.Count - 1);
+
+        IntPtr hWnd = GetUnityWindowHandle();
+
+        if (hWnd == IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError("Could not get Unity window handle.");
+            return;
+        }
+
+        // Get current window position
+        RECT rect;
+        GetWindowRect(hWnd, out rect);
+        int x = rect.Left;
+        int y = rect.Top;
+
+        // Set new size
+        SetWindowPos(hWnd, IntPtr.Zero, x, y, resolutions[sizeIncrement].x, resolutions[sizeIncrement].y, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+    }
+    public int SizeIncrement
+    {
+        get { return sizeIncrement; }
+    }
 
     public void SaveWindowPos()
     {
@@ -110,7 +155,12 @@ public class BorderlessWindow : MonoBehaviour
         {
             PlayerPrefs.SetInt("WindowPosX", rect.Left);
             PlayerPrefs.SetInt("WindowPosY", rect.Top);
-            PlayerPrefs.Save();
         }
+    }
+    public void SaveWindowSizeIncrement()
+    {
+        if (SystemInfo.deviceType == DeviceType.Handheld) { return; }
+
+        PlayerPrefs.SetInt("WindowSizeIncrement", sizeIncrement);
     }
 }

@@ -13,16 +13,12 @@ public class AlwaysOnTop : MonoBehaviour
     static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
 
     private IntPtr windowHandle;
-    private bool isAlwaysOnTop = false;
+    private bool isAlwaysOnTop = true;
 
     [DllImport("user32.dll", SetLastError = true)]
     static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter,
         int X, int Y, int cx, int cy, uint uFlags);
 
-    void Start()
-    {
-
-    }
     // THIS RUNS IMMEDIATELY AFTER BORDERLESSWINDOW SCRIPT
     public void SetAlwaysOnTop()
     {
@@ -32,6 +28,19 @@ public class AlwaysOnTop : MonoBehaviour
             UnityEngine.Debug.LogError("Could not get window handle.");
         }
     }
+    public void AlwaysOnTopFunction()
+    {
+        if (windowHandle == IntPtr.Zero) return;
+
+        if (PlayerPrefs.HasKey("AlwaysOnTop"))
+        {
+            isAlwaysOnTop = PlayerPrefs.GetInt("AlwaysOnTop") == 1;
+        }
+
+        IntPtr insertAfter = isAlwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST;
+
+        SetWindowPos(windowHandle, insertAfter, 0, 0, 0, 0, TOPMOST_FLAGS);
+    }
     public void ToggleAlwaysOnTop()
     {
         if (windowHandle == IntPtr.Zero) return;
@@ -40,15 +49,7 @@ public class AlwaysOnTop : MonoBehaviour
 
         IntPtr insertAfter = isAlwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST;
 
-        bool result = SetWindowPos(windowHandle, insertAfter, 0, 0, 0, 0, TOPMOST_FLAGS);
-        if (result)
-        {
-            UnityEngine.Debug.Log(isAlwaysOnTop ? "Always on top enabled." : "Always on top disabled.");
-        }
-        else
-        {
-            UnityEngine.Debug.LogError("Failed to set window position.");
-        }
+        SetWindowPos(windowHandle, insertAfter, 0, 0, 0, 0, TOPMOST_FLAGS);
     }
 
     IntPtr GetUnityWindowHandle()
@@ -57,5 +58,10 @@ public class AlwaysOnTop : MonoBehaviour
         {
             return process.MainWindowHandle;
         }
+    }
+
+    public void SaveAlwaysOnTop()
+    {
+        PlayerPrefs.SetInt("AlwaysOnTop", isAlwaysOnTop ? 1 : 0);
     }
 }

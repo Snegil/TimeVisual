@@ -20,11 +20,28 @@ public class TimeFlashes : MonoBehaviour
     [SerializeField]
     AudioSource audioSource;
 
-    void Start()
+    TimeHandler timeHandler;
+
+    void Awake()
     {
+        timeHandler = GameObject.FindGameObjectWithTag("TimeHandler").GetComponent<TimeHandler>();
         image = GetComponent<Image>();
     }
 
+    void OnEnable()
+    {
+        timeHandler.TimeHitZero += Flash;
+    }
+    void OnDisable()
+    {
+        timeHandler.TimeHitZero -= Flash;
+    }
+
+    public void StopFlashing()
+    {
+        StopAllCoroutines();
+        image.fillAmount = 0;
+    }
     public void Flash()
     {
         StartCoroutine(FlashRoutine());
@@ -36,7 +53,7 @@ public class TimeFlashes : MonoBehaviour
             for (int j = 0; j < amountOfFlashes; j++)
             {
                 image.fillAmount = 1;
-                audioSource.pitch = j % 2 == 0 ? 1 : 1.1f;
+                audioSource.pitch = j % 2 == 0 ? 0.99f : 1.01f;
                 audioSource.PlayOneShot(flashSound);
                 yield return new WaitForSeconds(timeBetweenFlashes);
                 image.fillAmount = 0;

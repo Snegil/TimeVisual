@@ -12,10 +12,6 @@ public class TimeHandler : MonoBehaviour
 
     bool tick;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
     // Update is called once per frame
     void Update()
     {
@@ -27,15 +23,15 @@ public class TimeHandler : MonoBehaviour
 
     void TickDown()
     {
-        if (timeRemaining > 0)
+        if (timeRemaining <= 0) return;
+
+        timeRemaining -= Time.deltaTime;
+        TimeChanged?.Invoke(timeRemaining);
+
+        if (timeRemaining <= 0)
         {
-            timeRemaining -= Time.deltaTime;
-            TimeChanged?.Invoke(timeRemaining);
-            if (timeRemaining <= 0)
-            {
-                TimeHitZero?.Invoke();
-                tick = false;
-            }
+            TimeHitZero?.Invoke();
+            tick = false;
         }
     }
     public void SetTime(int time)

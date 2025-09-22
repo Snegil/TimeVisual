@@ -1,20 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SetMaxTimeOnEnable : MonoBehaviour
 {
     [Space, SerializeField, Header("TimeDisplay Script")]
-    TimeDisplay timeDisplay;
-    [SerializeField, Header("TimeHandler Script")]
+    TimeDisplayManager timeDisplayManager;
+
     TimeHandler timeHandler;
 
     [Space, SerializeField, Header("Max Time in MINUTES")]
     float maxTime;
 
+    void Awake()
+    {
+        timeHandler = GameObject.FindGameObjectWithTag("TimeHandler").GetComponent<TimeHandler>();
+    }
+    
     private void OnEnable()
     {
-        timeDisplay.TimeMaximum(maxTime);
+        timeDisplayManager.TimeMaximum(maxTime);
         timeHandler.ResetTime();
     }
 }
