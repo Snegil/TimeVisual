@@ -23,6 +23,7 @@ public class TimeDisplayManager : MonoBehaviour
 
         if (!PlayerPrefs.HasKey("AnimationIndex")) return;
         index = (EnumAnimationTypes)PlayerPrefs.GetInt("AnimationIndex");
+        animations[(int)index].enabled = true;
     }
 
 

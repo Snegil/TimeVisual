@@ -12,6 +12,14 @@ public class TimeHandler : MonoBehaviour
 
     bool tick;
 
+    float secondHasPassed = 1f;
+    float setSecondHasPassed;
+
+    void Start()
+    {
+        setSecondHasPassed = secondHasPassed;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -26,7 +34,15 @@ public class TimeHandler : MonoBehaviour
         if (timeRemaining <= 0) return;
 
         timeRemaining -= Time.deltaTime;
-        TimeChanged?.Invoke(timeRemaining);
+        secondHasPassed -= Time.deltaTime;
+
+        if (secondHasPassed < 0)
+        {
+            Debug.Log("Tick");
+            secondHasPassed += setSecondHasPassed;
+            TimeChanged?.Invoke(timeRemaining);
+        }
+        
 
         if (timeRemaining <= 0)
         {
