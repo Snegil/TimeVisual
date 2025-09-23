@@ -50,6 +50,10 @@ public class TimeHandler : MonoBehaviour
             tick = false;
         }
     }
+    public void UpdateTimeMeter()
+    {
+        TimeChanged?.Invoke(timeRemaining);
+    }
     public void SetTime(int time)
     {
         //TODO: FIX VIBRATION ON PHONES
