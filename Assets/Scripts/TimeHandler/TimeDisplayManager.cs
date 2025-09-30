@@ -8,6 +8,7 @@ public class TimeDisplayManager : MonoBehaviour
 
     float maxTime = 60 * 60;
 
+    [SerializeField]
     Image image;
 
     [SerializeField]
@@ -19,7 +20,6 @@ public class TimeDisplayManager : MonoBehaviour
     void Awake()
     {
         timeHandler = GameObject.FindGameObjectWithTag("TimeHandler").GetComponent<TimeHandler>();
-        image = GetComponent<Image>();
 
         if (!PlayerPrefs.HasKey("AnimationIndex")) return;
         index = (EnumAnimationTypes)PlayerPrefs.GetInt("AnimationIndex");

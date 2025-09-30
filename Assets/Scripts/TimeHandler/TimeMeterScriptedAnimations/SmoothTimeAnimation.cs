@@ -7,4 +7,9 @@ public class SmoothTimeAnimation : MonoBehaviour, ITimeAnimation
     {
         image.fillAmount = time / maxTime;
     }
+
+    public void UpdateFillAmount(Image[] images, float value, float maxTime)
+    {
+        throw new System.NotImplementedException();
+    }
 }
