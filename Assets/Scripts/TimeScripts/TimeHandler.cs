@@ -3,9 +3,10 @@ using UnityEngine;
 public class TimeHandler : MonoBehaviour
 {
     public delegate void TimeHitZeroEvent();
+    public event TimeHitZeroEvent TimeHitZero;
     public delegate void TimeChangedEvent(float time);
     public event TimeChangedEvent TimeChanged;
-    public event TimeHitZeroEvent TimeHitZero;
+    
 
     [SerializeField]
     float timeRemaining;

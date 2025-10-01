@@ -3,8 +3,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class TimeFlashes : MonoBehaviour
-{   
-    Image image;
+{
+    public delegate void FlashEvent();
+    public event FlashEvent Flash;
+
+    [SerializeField]
+    Image timeMeter;
 
     [Space, SerializeField, Header("When time is up; the display flashes\n\nSETTINGS")]
     int amountOfFlashes = 5;
@@ -14,49 +18,37 @@ public class TimeFlashes : MonoBehaviour
     int setsOfFlashes = 3;
     [SerializeField]
     float timeBetweenSetsOfFlashes = 1.5f;
-    
-    [SerializeField]
-    AudioClip flashSound;
-    [SerializeField]
-    AudioSource audioSource;
-
-    TimeHandler timeHandler;
-
-    void Awake()
-    {
-        timeHandler = GameObject.FindGameObjectWithTag("TimeHandler").GetComponent<TimeHandler>();
-        image = GetComponent<Image>();
-    }
 
     void OnEnable()
     {
-        timeHandler.TimeHitZero += Flash;
+        transform.parent.GetComponent<TimeHandler>().TimeHitZero += EnableFlash;
     }
     void OnDisable()
     {
-        timeHandler.TimeHitZero -= Flash;
+        transform.parent.GetComponent<TimeHandler>().TimeHitZero -= EnableFlash;
     }
 
     public void StopFlashing()
     {
         StopAllCoroutines();
-        image.fillAmount = 0;
+        timeMeter.fillAmount = 0;
     }
-    public void Flash()
+
+    public void EnableFlash()
     {
         StartCoroutine(FlashRoutine());
     }
+
     IEnumerator FlashRoutine()
     {
         for (int i = 0; i < setsOfFlashes; i++)
         {
             for (int j = 0; j < amountOfFlashes; j++)
             {
-                image.fillAmount = 1;
-                audioSource.pitch = j % 2 == 0 ? 0.99f : 1.01f;
-                audioSource.PlayOneShot(flashSound);
+                timeMeter.fillAmount = 1;
+                Flash?.Invoke();
                 yield return new WaitForSeconds(timeBetweenFlashes);
-                image.fillAmount = 0;
+                timeMeter.fillAmount = 0;
                 yield return new WaitForSeconds(timeBetweenFlashes);
             }
             yield return new WaitForSeconds(timeBetweenSetsOfFlashes);

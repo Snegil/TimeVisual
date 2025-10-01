@@ -4,12 +4,15 @@ using UnityEngine.UI;
 
 public class TimeDisplayManager : MonoBehaviour
 {
-    TimeHandler timeHandler;
-
     float maxTime = 60 * 60;
 
+    public float MaxTime
+    {
+        set { maxTime = value * 60; }
+    }
+
     [SerializeField]
-    Image image;
+    Image timeMeter;
 
     [SerializeField]
     List<MonoBehaviour> animations = new();
@@ -19,30 +22,23 @@ public class TimeDisplayManager : MonoBehaviour
 
     void Awake()
     {
-        timeHandler = GameObject.FindGameObjectWithTag("TimeHandler").GetComponent<TimeHandler>();
-
         if (!PlayerPrefs.HasKey("AnimationIndex")) return;
         index = (EnumAnimationTypes)PlayerPrefs.GetInt("AnimationIndex");
         animations[(int)index].enabled = true;
     }
 
-
     void OnEnable()
     {
-        timeHandler.TimeChanged += UpdateTime;
+        transform.parent.GetComponent<TimeHandler>().TimeChanged += UpdateTime;
     }
     void OnDisable()
     {
-        timeHandler.TimeChanged -= UpdateTime;
-    }
-    public void TimeMaximum(float maxTimeInMinutes)
-    {
-        maxTime = maxTimeInMinutes * 60;
-    }
+        transform.parent.GetComponent<TimeHandler>().TimeChanged -= UpdateTime;
+    }   
     void UpdateTime(float time)
     {
         ITimeAnimation animation = animations[(int)index] as ITimeAnimation;
-        animation.UpdateAnimation(image, time, maxTime);
+        animation.UpdateAnimation(timeMeter, time, maxTime);
     }
     public void ChangeIndex(int indexStep)
     {
