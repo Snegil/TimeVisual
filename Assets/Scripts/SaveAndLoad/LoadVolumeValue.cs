@@ -23,7 +23,7 @@ public class LoadVolumeValue : MonoBehaviour
 
         if (PlayerPrefs.HasKey("Volume"))
         {
-            int volume = PlayerPrefs.GetInt("Volume");
+            float volume = PlayerPrefs.GetFloat("Volume");
             slider.value = volume;
             changeSpriteOnValue.ChangeSprite(volume);
             audioMixer.SetFloat("Volume", volume);

@@ -22,6 +22,11 @@ public class BorderlessWindow : MonoBehaviour
     const uint SWP_NOACTIVATE = 0x0010;
     const uint FLAGS = SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE;
 
+    // Opacity/Transparency constants
+    const int GWL_EXSTYLE = -20;
+    const uint WS_EX_LAYERED = 0x00080000;
+    const uint LWA_ALPHA = 0x00000002;
+
     [DllImport("user32.dll")]
     static extern uint GetWindowLong(IntPtr hWnd, int nIndex);
 
@@ -31,6 +36,12 @@ public class BorderlessWindow : MonoBehaviour
     [DllImport("user32.dll")]
     static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter,
         int X, int Y, int cx, int cy, uint uFlags);
+
+    [DllImport("user32.dll")]
+    static extern bool SetLayeredWindowAttributes(IntPtr hWnd, uint crKey, byte bAlpha, uint dwFlags);
+
+    [DllImport("user32.dll")]
+    static extern IntPtr GetForegroundWindow();
 
     IntPtr GetUnityWindowHandle()
     {
@@ -57,6 +68,18 @@ public class BorderlessWindow : MonoBehaviour
     [SerializeField]
     int sizeIncrement = 5;
 
+    [Header("Window Opacity Settings")]
+    [SerializeField, Range(0.1f, 1.0f)]
+    float inactiveOpacity = 0.7f;
+    public float InactiveOpacity
+    {
+        get { return inactiveOpacity; }
+        set { inactiveOpacity = Mathf.Clamp(value, 0.1f, 1.0f); }
+    }
+
+    private bool isWindowActive = true;
+    private IntPtr windowHandle;
+
     readonly List<Vector2Int> resolutions = new()
     {
         // 16:9 Aspect Ratio Resolutions
@@ -77,7 +100,8 @@ public class BorderlessWindow : MonoBehaviour
     {
         alwaysOnTopComponent = GetComponent<AlwaysOnTop>();
 
-        IntPtr hWnd = GetUnityWindowHandle();
+        windowHandle = GetUnityWindowHandle();
+        IntPtr hWnd = windowHandle;
 
         if (hWnd == IntPtr.Zero)
         {
@@ -106,10 +130,49 @@ public class BorderlessWindow : MonoBehaviour
 
         alwaysOnTopComponent.SetAlwaysOnTop();
         alwaysOnTopComponent.AlwaysOnTopFunction();
-    }
-    // TEST SCREENSIZE; WORKED BUT NOT A GREAT WAY TO OPTIMISE THINGS.
-    //Screen.currentResolution.width / 6, Screen.currentResolution.height / 5
 
+        // Enable layered window for opacity support
+        EnableWindowTransparency();
+        SetWindowOpacity(1);
+    }
+
+    void Update()
+    {
+        // Check if window focus has changed
+        CheckWindowFocus();
+    }
+
+    private void CheckWindowFocus()
+    {
+        if (windowHandle == IntPtr.Zero) return;
+
+        IntPtr foregroundWindow = GetForegroundWindow();
+        bool isForeground = foregroundWindow == windowHandle;
+
+        if (isForeground && !isWindowActive)
+        {
+            SetActiveOpacity();
+        }
+        else if (!isForeground && isWindowActive)
+        {
+            SetInactiveOpacity();
+        }
+    }
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (windowHandle == IntPtr.Zero) return;
+
+        if (hasFocus)
+        {
+            SetActiveOpacity();
+        }
+        else
+        {
+            SetInactiveOpacity();
+        }
+    }
+    
     public void WindowSizeIncrement(int addedIncrement)
     {
         if (SystemInfo.deviceType == DeviceType.Handheld) { return; }
@@ -162,5 +225,35 @@ public class BorderlessWindow : MonoBehaviour
         if (SystemInfo.deviceType == DeviceType.Handheld) { return; }
 
         PlayerPrefs.SetInt("WindowSizeIncrement", sizeIncrement);
+    }
+
+    private void EnableWindowTransparency()
+    {
+        if (windowHandle == IntPtr.Zero) return;
+
+        uint exStyle = GetWindowLong(windowHandle, GWL_EXSTYLE);
+        exStyle |= WS_EX_LAYERED;
+        SetWindowLong(windowHandle, GWL_EXSTYLE, exStyle);
+    }
+
+    public void SetWindowOpacity(float opacity)
+    {
+        if (windowHandle == IntPtr.Zero) return;
+
+        opacity = Mathf.Clamp01(opacity);
+        byte alpha = (byte)(opacity * 255);
+        SetLayeredWindowAttributes(windowHandle, 0, alpha, LWA_ALPHA);
+    }
+
+    public void SetActiveOpacity()
+    {
+        SetWindowOpacity(1f);
+        isWindowActive = true;
+    }
+
+    public void SetInactiveOpacity()
+    {
+        SetWindowOpacity(inactiveOpacity);
+        isWindowActive = false;
     }
 }

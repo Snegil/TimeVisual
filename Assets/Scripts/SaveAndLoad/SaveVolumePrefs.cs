@@ -10,7 +10,7 @@ public class SaveVolumePrefs : MonoBehaviour
     {
         if (audioMixer.GetFloat("Volume", out float value))
         {
-            PlayerPrefs.SetInt("Volume", (int)value);
+            PlayerPrefs.SetFloat("Volume", value);
             PlayerPrefs.Save();
         }
     }

@@ -59,7 +59,7 @@ public class TimeHandler : MonoBehaviour
     {
         //TODO: FIX VIBRATION ON PHONES
         //Handheld.Vibrate();
-        timeRemaining = time;
+        timeRemaining = time * 60;
         tick = true;
     }
     public void ResetTime()
