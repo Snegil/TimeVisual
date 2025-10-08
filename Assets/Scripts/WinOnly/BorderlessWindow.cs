@@ -66,7 +66,7 @@ public class BorderlessWindow : MonoBehaviour
     AlwaysOnTop alwaysOnTopComponent;
 
     [SerializeField]
-    int sizeIncrement = 5;
+    int sizeIncrement = 0;
 
     [Header("Window Opacity Settings")]
     [SerializeField, Range(0.1f, 1.0f)]
@@ -79,6 +79,8 @@ public class BorderlessWindow : MonoBehaviour
 
     private bool isWindowActive = true;
     private IntPtr windowHandle;
+
+    IntPtr hWnd;
 
     readonly List<Vector2Int> resolutions = new()
     {
@@ -101,26 +103,21 @@ public class BorderlessWindow : MonoBehaviour
         alwaysOnTopComponent = GetComponent<AlwaysOnTop>();
 
         windowHandle = GetUnityWindowHandle();
-        IntPtr hWnd = windowHandle;
-
-        if (hWnd == IntPtr.Zero)
-        {
-            UnityEngine.Debug.LogError("Could not get Unity window handle.");
-            return;
-        }
+        hWnd = windowHandle;
 
         uint style = GetWindowLong(hWnd, GWL_STYLE);
         style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
 
         SetWindowLong(hWnd, GWL_STYLE, style);
 
-        SetWindowPos(hWnd, IntPtr.Zero, 0, 0, 0, 0, FLAGS);
-
+        //SetWindowPos(hWnd, IntPtr.Zero, 0, 0, 0, 0, FLAGS);
+        
         if (PlayerPrefs.HasKey("WindowPosX") && PlayerPrefs.HasKey("WindowPosY") && PlayerPrefs.HasKey("WindowSizeIncrement"))
         {
             int posX = PlayerPrefs.GetInt("WindowPosX");
             int posY = PlayerPrefs.GetInt("WindowPosY");
             sizeIncrement = PlayerPrefs.GetInt("WindowSizeIncrement");
+            
             SetWindowPos(hWnd, IntPtr.Zero, posX, posY, resolutions[sizeIncrement].x, resolutions[sizeIncrement].y, SWP_FRAMECHANGED);
         }
         else
@@ -131,14 +128,12 @@ public class BorderlessWindow : MonoBehaviour
         alwaysOnTopComponent.SetAlwaysOnTop();
         alwaysOnTopComponent.AlwaysOnTopFunction();
 
-        // Enable layered window for opacity support
         EnableWindowTransparency();
         SetWindowOpacity(1);
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        // Check if window focus has changed
         CheckWindowFocus();
     }
 
@@ -159,20 +154,6 @@ public class BorderlessWindow : MonoBehaviour
         }
     }
 
-    void OnApplicationFocus(bool hasFocus)
-    {
-        if (windowHandle == IntPtr.Zero) return;
-
-        if (hasFocus)
-        {
-            SetActiveOpacity();
-        }
-        else
-        {
-            SetInactiveOpacity();
-        }
-    }
-    
     public void WindowSizeIncrement(int addedIncrement)
     {
         if (SystemInfo.deviceType == DeviceType.Handheld) { return; }
@@ -180,15 +161,6 @@ public class BorderlessWindow : MonoBehaviour
         sizeIncrement += addedIncrement;
         sizeIncrement = Mathf.Clamp(sizeIncrement, 0, resolutions.Count - 1);
 
-        IntPtr hWnd = GetUnityWindowHandle();
-
-        if (hWnd == IntPtr.Zero)
-        {
-            UnityEngine.Debug.LogError("Could not get Unity window handle.");
-            return;
-        }
-
-        // Get current window position
         RECT rect;
         GetWindowRect(hWnd, out rect);
         int x = rect.Left;
@@ -205,13 +177,6 @@ public class BorderlessWindow : MonoBehaviour
     public void SaveWindowPos()
     {
         if (SystemInfo.deviceType == DeviceType.Handheld) { return; }
-
-        IntPtr hWnd = GetUnityWindowHandle();
-        if (hWnd == IntPtr.Zero)
-        {
-            UnityEngine.Debug.LogError("Could not get Unity window handle.");
-            return;
-        }
 
         // Get window rect
         if (GetWindowRect(hWnd, out RECT rect))

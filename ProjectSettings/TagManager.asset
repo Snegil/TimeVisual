@@ -6,6 +6,7 @@ TagManager:
   tags:
   - TimeHandler
   - TimeMeter
+  - ThemeManager
   layers:
   - Default
   - TransparentFX

@@ -11,7 +11,6 @@ public class SaveVolumePrefs : MonoBehaviour
         if (audioMixer.GetFloat("Volume", out float value))
         {
             PlayerPrefs.SetFloat("Volume", value);
-            PlayerPrefs.Save();
         }
     }
 }

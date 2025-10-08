@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.UI;
 
 public class ThemeManager : MonoBehaviour
@@ -8,7 +10,8 @@ public class ThemeManager : MonoBehaviour
     [SerializeField]
     Theme[] themes;
 
-    bool lightTheme = true;
+    bool darkMode = false;
+    public bool DarkMode => darkMode;
 
     [Space]
     [Space, Header("Objects to change the colour of")]
@@ -30,14 +33,20 @@ public class ThemeManager : MonoBehaviour
     List<Image> toggleButtons;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
+        if (PlayerPrefs.HasKey("Theme"))
+        {
+            darkMode = PlayerPrefs.GetInt("Theme") == 1;
+        }
+
         ApplyTheme();
     }
 
     public void ApplyTheme()
     {
-        int index = lightTheme ? 0 : 1;
+        // If darkmode is true, set index to 1.
+        int index = darkMode ? 1 : 0;
 
         if (themes[index] == null)
         {
@@ -45,48 +54,36 @@ public class ThemeManager : MonoBehaviour
             return;
         }
 
+        ImageListColourChange(topBarObjects, themes[index].TopBarColour);
+        ImageListColourChange(backgrounds, themes[index].BackgroundColour);
+        ImageListColourChange(icons, themes[index].IconColour);
+        ImageListColourChange(sliderFill, themes[index].FillColour);
+        ImageListColourChange(sliderFillBackground, themes[index].BackgroundFillColour);
+        ImageListColourChange(toggleButtons, themes[index].ToggleButtons);
 
-        for (int i = 0; i < topBarObjects.Count; i++)
-        {
-            if (topBarObjects[i] == null) return;
-
-            topBarObjects[i].color = themes[index].TopBarColour;
-        }
-        for (int i = 0; i < backgrounds.Count; i++)
-        {
-            if (backgrounds[i] == null) return;
-
-            backgrounds[i].color = themes[index].BackgroundColour;
-        }
-        for (int i = 0; i < icons.Count; i++)
-        {
-            if (icons[i] == null) return;
-
-            icons[i].color = themes[index].IconColour;
-        }
         for (int i = 0; i < textColour.Count; i++)
         {
             if (textColour[i] == null) return;
             textColour[i].color = themes[index].TextColour;
         }
-        for (int i = 0; i < sliderFill.Count; i++)
+    }
+
+    void ImageListColourChange(List<Image> images, Color color)
+    {
+        for (int i = 0; i < images.Count; i++)
         {
-            if (sliderFill[i] == null) return;
-
-            sliderFill[i].color = themes[index].FillColour;
-
-            if (sliderFillBackground[i] == null) return;
-
-            sliderFillBackground[i].color = themes[index].BackgroundFillColour;
-        }        
-        for (int i = 0; i < toggleButtons.Count; i++)
-        {
-            toggleButtons[i].color = themes[index].ToggleButtons;
+            images[i].color = color;
         }
     }
 
-    public void ChangeIndex()
+    public void ToggleThemes()
     {
-        lightTheme = !lightTheme;
+        darkMode = !darkMode;
+
+        ApplyTheme();
+    }
+    public void SaveThemePrefs()
+    {
+        PlayerPrefs.SetInt("Theme", darkMode ? 1 : 0);
     }
 }
